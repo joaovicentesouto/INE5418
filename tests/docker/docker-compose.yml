@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  cont1:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: container1
+    environment:
+      - BROTHER=container2
+    #tty: true                  # iterative
+
+  cont2:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: container2
+    environment:
+      - BROTHER=container1
+    #tty: true
