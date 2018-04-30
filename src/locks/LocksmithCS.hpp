@@ -6,7 +6,7 @@ namespace locks
     class LocksmithCS : public Locksmith
     {
     public:
-        using address_type = connection::address_type;
+        using address_type = types::address_type;
 
         // Class constructors
         LocksmithCS(const address_type &server_addr);

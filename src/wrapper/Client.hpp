@@ -1,12 +1,12 @@
-#include <string>
+#include "../connection_types/BasicTypes.hpp"
 
-namespace connection
+namespace wrapper
 {
     class Client
     {
     public:
-        using string_type = std::string;
-        
+        using string_type = types::string_type;
+
         // Class constructors
         virtual ~Client() = default;
 
@@ -16,4 +16,4 @@ namespace connection
 
     private:
     };
-}   // namespace connection
+}   // namespace wrapper

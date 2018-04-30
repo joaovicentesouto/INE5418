@@ -1,0 +1,43 @@
+################################################################################
+# This is the main CMakeLists file for the pratical work for INE5418.
+#
+# Its main goals are:
+#   - Set up global variables.
+#   - Configure dependencies (find_package).
+#   - Add subdirectories.
+#
+################################################################################
+
+################################################################################
+# Set up global variables
+################################################################################
+
+# Set up minimal cmake version
+cmake_minimum_required(VERSION 3.5.2)
+
+# Set project name
+project(distr_systens)
+
+# Set project version
+set(distr_systens_VERSION 0.1)
+
+# Set c++14 globally
+set(CMAKE_CXX_STANDARD 14)
+
+# Set distr_systens source dir
+set(distr_systens_source_dir ${PROJECT_SOURCE_DIR})
+
+################################################################################
+# Handle raquirements
+################################################################################
+
+# Find Boost
+find_package(Boost 1.59 REQUIRED)
+
+################################################################################
+# Project logic 
+################################################################################
+
+# Add subdirectories
+#add_subdirectory(src)
+add_subdirectory(tests)

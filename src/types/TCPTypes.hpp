@@ -1,10 +1,8 @@
-#include <string>
 #include <boost/asio.hpp>
 
-namespace connection
+namespace types
 {
     // Namespace member types
-    using string_type     = std::string;
     using port_type       = const unsigned short;
     
     using io_service_type = boost::asio::io_service;
@@ -21,4 +19,4 @@ namespace connection
     //using write           = boost::asio::write;
     //using read            = boost::asio::read;
 
-}   // namespace connection
+}   // namespace types

@@ -6,7 +6,7 @@ namespace locks
     class LocksmithToken : public Locksmith
     {
     public:
-        using address_type = connection::address_type;
+        using address_type = types::address_type;
 
         // Class constructors
         LocksmithToken(const address_type &next_addr);

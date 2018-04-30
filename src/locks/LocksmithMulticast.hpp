@@ -6,7 +6,7 @@ namespace locks
     class LocksmithMulticast : public Locksmith
     {
     public:
-        using address_type = connection::address_type;
+        using address_type = types::address_type;
 
         // Class constructors
         LocksmithMulticast(const address_type &multicast_addr);

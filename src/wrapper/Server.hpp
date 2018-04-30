@@ -1,5 +1,5 @@
 
-namespace connection
+namespace wrapper
 {
     class Server
     {
@@ -12,4 +12,4 @@ namespace connection
         virtual void run() = 0;
 
     };
-}   // namespace connection
+}   // namespace wrapper
