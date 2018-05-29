@@ -33,3 +33,5 @@
 
 # VSCode
 .vscode
+CMakeLists.txt.user
+.DS_Store
