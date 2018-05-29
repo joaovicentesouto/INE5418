@@ -1,8 +1,9 @@
 #!/bin/zsh
 
-echo "Seu nome de usuário é:"
-whoami
-echo "Info de hora atual e tempo que o computador está ligado:"
-uptime
-echo "O script está executando do diretório:"
-pwd  
+echo "TESTE......"
+mkdir build
+cd build
+cmake ..
+make
+cd distributed_systems
+./distributed_systems_executable
