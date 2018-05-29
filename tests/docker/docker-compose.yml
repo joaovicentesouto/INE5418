@@ -8,7 +8,10 @@ services:
     container_name: container1
     environment:
       - BROTHER=container2
+      - SHARED_FILE=/shared_content/shared_object.txt
     #tty: true                  # iterative
+    volumes:
+      - ./shared_content:/shared_content
 
   cont2:
     build:
@@ -17,4 +20,7 @@ services:
     container_name: container2
     environment:
       - BROTHER=container1
+      - SHARED_FILE=/shared_content/shared_object.txt
     #tty: true
+    volumes:
+      - ./shared_content:/shared_content

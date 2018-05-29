@@ -13,7 +13,7 @@
 ################################################################################
 
 # Set up minimal cmake version
-cmake_minimum_required(VERSION 3.5.2)
+cmake_minimum_required(VERSION 3.5.1)
 
 # Set project name
 project(distributed_systems)
