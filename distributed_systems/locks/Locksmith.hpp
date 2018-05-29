@@ -1,3 +1,5 @@
+#ifndef LOCKSMITH_HPP
+#define LOCKSMITH_HPP
 
 namespace locks
 {
@@ -11,3 +13,5 @@ namespace locks
         virtual void lunlock() = 0;
     };
 }   // namespace lock
+
+#endif // LOCKSMITH_HPP

@@ -1,5 +1,5 @@
 ################################################################################
-# This is the CMakeLists file for the distr_systens directory.
+# This is the CMakeLists file for the distributed_systems directory.
 #
 ################################################################################
 

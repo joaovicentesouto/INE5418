@@ -1,12 +1,15 @@
+#ifndef LOCKS_MULTICAST_HPP
+#define LOCKS_MULTICAST_HPP
+
 #include "Locksmith.hpp"
-#include "../wrapper/UDPTypes.hpp"
+#include "../types/UDPTypes.hpp"
 
 namespace locks
 {
     class LocksmithMulticast : public Locksmith
     {
     public:
-        using address_type = types::address_type;
+        using address_type = type::udp::address_type;
 
         // Class constructors
         LocksmithMulticast(const address_type &multicast_addr);
@@ -25,3 +28,5 @@ namespace locks
     };
 
 }   // namespace lock
+
+#endif  // LOCKS_MULTICAST_HPP

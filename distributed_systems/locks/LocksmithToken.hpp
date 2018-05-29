@@ -1,12 +1,15 @@
+#ifndef LOCKS_TOKEN_HPP
+#define LOCKS_TOKEN_HPP
+
 #include "Locksmith.hpp"
-#include "../wrapper/UDPTypes.hpp"
+#include "../types/UDPTypes.hpp"
 
 namespace locks
 {
     class LocksmithToken : public Locksmith
     {
     public:
-        using address_type = types::address_type;
+        using address_type = type::udp::address_type;
 
         // Class constructors
         LocksmithToken(const address_type &next_addr);
@@ -25,3 +28,5 @@ namespace locks
     };
 
 }   // namespace lock
+
+#endif  // LOCKS_TOKEN_HPP

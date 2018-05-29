@@ -16,16 +16,16 @@
 cmake_minimum_required(VERSION 3.5.2)
 
 # Set project name
-project(distr_systens)
+project(distributed_systems)
 
 # Set project version
-set(distr_systens_VERSION 0.1)
+set(distributed_systems_VERSION 0.1)
 
 # Set c++14 globally
 set(CMAKE_CXX_STANDARD 14)
 
-# Set distr_systens source dir
-set(distr_systens_source_dir ${PROJECT_SOURCE_DIR})
+# Set distributed_systems source dir
+set(distributed_systems_source_dir ${PROJECT_SOURCE_DIR})
 
 ################################################################################
 # Handle raquirements
@@ -39,5 +39,5 @@ find_package(Boost 1.59 REQUIRED)
 ################################################################################
 
 # Add subdirectories
-#add_subdirectory(src)
+add_subdirectory(distributed_systems)
 add_subdirectory(tests)

@@ -1,12 +1,15 @@
+#ifndef LOCKS_CS_HPP
+#define LOCKS_CS_HPP
+
 #include "Locksmith.hpp"
-#include "../wrapper/TCPTypes.hpp"
+#include "../types/TCPTypes.hpp"
 
 namespace locks
 {
     class LocksmithCS : public Locksmith
     {
     public:
-        using address_type = types::address_type;
+        using address_type = type::tcp::address_type;
 
         // Class constructors
         LocksmithCS(const address_type &server_addr);
@@ -25,3 +28,5 @@ namespace locks
     };
 
 }   // namespace lock
+
+#endif  // LOCKS_CS_HPP
