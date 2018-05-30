@@ -1,8 +1,11 @@
 #ifndef LOCKS_CS_HPP
 #define LOCKS_CS_HPP
 
+#include <iostream>
+#include <cstdlib>
+
 #include "Locksmith.hpp"
-#include "../types/TCPTypes.hpp"
+#include <distributed_systems/types/TCPTypes.hpp>
 
 namespace locks
 {
@@ -12,7 +15,7 @@ namespace locks
         using address_type = type::tcp::address_type;
 
         // Class constructors
-        LocksmithCS(const address_type &server_addr);
+        LocksmithCS();
 
         LocksmithCS(const LocksmithCS&) = delete;
         LocksmithCS& operator=(const LocksmithCS&) = delete;
@@ -23,8 +26,8 @@ namespace locks
         void llock();
         void lunlock();
 
-    private:
-        const address_type m_server_addr;
+    // private:
+    //     const address_type m_server_addr;
     };
 
 }   // namespace lock

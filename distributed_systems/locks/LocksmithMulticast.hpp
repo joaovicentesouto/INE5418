@@ -2,7 +2,7 @@
 #define LOCKS_MULTICAST_HPP
 
 #include "Locksmith.hpp"
-#include "../types/UDPTypes.hpp"
+#include <distributed_systems/types/UDPTypes.hpp>
 
 namespace locks
 {
@@ -12,7 +12,7 @@ namespace locks
         using address_type = type::udp::address_type;
 
         // Class constructors
-        LocksmithMulticast(const address_type &multicast_addr);
+        LocksmithMulticast();
 
         LocksmithMulticast(const LocksmithMulticast&) = delete;
         LocksmithMulticast& operator=(const LocksmithMulticast&) = delete;
@@ -23,8 +23,8 @@ namespace locks
         void llock();
         void lunlock();
 
-    private:
-        const address_type m_multicast_addr;
+    // private:
+    //     const address_type m_multicast_addr;
     };
 
 }   // namespace lock

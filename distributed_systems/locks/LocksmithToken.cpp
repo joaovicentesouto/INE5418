@@ -3,8 +3,7 @@
 namespace locks
 {
 
-LocksmithToken::LocksmithToken(const address_type &next_addr) :
-    m_next_addr{next_addr}
+LocksmithToken::LocksmithToken()
 {
     /*
         Iniciar um thread para ficar esperando para receber o token.

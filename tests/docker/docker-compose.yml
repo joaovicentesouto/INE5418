@@ -1,26 +1,51 @@
 version: '3'
 
 services:
+
   cont1:
     build:
       context: ./
       dockerfile: Dockerfile
     container_name: container1
+    hostname: container1
     environment:
-      - BROTHER=container2
+      - LEFT_BROTHER=container3
+      - RIGHT_BROTHER=container2
+      - SERVER_ADDRESS=container1
+      - HIBERNATION_TIME=1
       - SHARED_FILE=/shared_content/shared_object.txt
-    #tty: true                  # iterative
     volumes:
       - ./shared_content:/shared_content
+    #tty: true                  # iterative
 
   cont2:
     build:
       context: ./
       dockerfile: Dockerfile
     container_name: container2
+    hostname: container2
     environment:
-      - BROTHER=container1
+      - LEFT_BROTHER=container1
+      - RIGHT_BROTHER=container3
+      - SERVER_ADDRESS=container1
+      - HIBERNATION_TIME=3
       - SHARED_FILE=/shared_content/shared_object.txt
-    #tty: true
     volumes:
       - ./shared_content:/shared_content
+    #tty: true                  # iterative
+
+  cont3:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: container3
+    hostname: container3
+    environment:
+      - LEFT_BROTHER=container2
+      - RIGHT_BROTHER=container1
+      - SERVER_ADDRESS=container1
+      - HIBERNATION_TIME=5
+      - SHARED_FILE=/shared_content/shared_object.txt
+    volumes:
+      - ./shared_content:/shared_content
+    #tty: true                  # iterative

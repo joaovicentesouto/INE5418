@@ -2,7 +2,7 @@
 #define LOCKS_TOKEN_HPP
 
 #include "Locksmith.hpp"
-#include "../types/UDPTypes.hpp"
+#include <distributed_systems/types/UDPTypes.hpp>
 
 namespace locks
 {
@@ -12,7 +12,7 @@ namespace locks
         using address_type = type::udp::address_type;
 
         // Class constructors
-        LocksmithToken(const address_type &next_addr);
+        LocksmithToken();
 
         LocksmithToken(const LocksmithToken&) = delete;
         LocksmithToken& operator=(const LocksmithToken&) = delete;
@@ -23,8 +23,8 @@ namespace locks
         void llock();
         void lunlock();
 
-    private:
-        const address_type m_next_addr;
+    // private:
+    //     const address_type m_next_addr;
     };
 
 }   // namespace lock

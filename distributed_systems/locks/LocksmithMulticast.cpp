@@ -3,8 +3,7 @@
 namespace locks
 {
 
-LocksmithMulticast::LocksmithMulticast(const address_type &multicast_addr) :
-    m_multicast_addr{multicast_addr}
+LocksmithMulticast::LocksmithMulticast()
 {
     /*
         Pensar no comportamento ...
