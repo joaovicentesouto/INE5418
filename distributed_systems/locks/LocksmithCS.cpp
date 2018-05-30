@@ -5,18 +5,16 @@ namespace locks
 
 LocksmithCS::LocksmithCS()
 {
-    std::cout << "Locks: " << '\n';
+    std::cout << "Server: ";
     const char* server_address = std::getenv("SERVER_ADDRESS");
     if (server_address)
     {
         std::cout << server_address << '\n';
     }
 
-    const char* hostname = std::getenv("hostname");
-    if (hostname)
-    {
-        std::cout << "I will be the server\n";
-    }
+    std::cout << "Host: ";
+    auto hostname = type::ip::host_name();
+    std::cout << hostname << '\n';
     /*
         if ( m_server_addr == meu_ip )
             Cria uma thread para ser o servidor.

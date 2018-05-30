@@ -1,7 +1,7 @@
 #ifndef UDP_TYPES_HPP
 #define UDP_TYPES_HPP
 
-#include <boost/asio.hpp>
+#include "BasicTypes.hpp"
 
 namespace type
 {
@@ -10,8 +10,8 @@ namespace udp
     // Namespace member types
     using port_type       = const unsigned short;
     
-    using io_service_type = boost::asio::io_service;
-    using protocol_type   = boost::asio::ip::udp;
+    using io_service_type = asio::io_service;
+    using protocol_type   = ip::udp;
 
     using address_type    = protocol_type::endpoint;
     using resolver_type   = protocol_type::resolver;

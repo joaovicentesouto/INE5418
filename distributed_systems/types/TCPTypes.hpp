@@ -1,7 +1,7 @@
 #ifndef TCP_TYPES_HPP
 #define TCP_TYPES_HPP
 
-#include <boost/asio.hpp>
+#include "BasicTypes.hpp"
 
 namespace type
 {
@@ -10,8 +10,8 @@ namespace tcp
     // Namespace member types
     using port_type       = const unsigned short;
     
-    using io_service_type = boost::asio::io_service;
-    using protocol_type   = boost::asio::ip::tcp;
+    using io_service_type = asio::io_service;
+    using protocol_type   = ip::tcp;
 
     using address_type    = protocol_type::endpoint;
     using resolver_type   = protocol_type::resolver;
