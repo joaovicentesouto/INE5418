@@ -16,12 +16,12 @@
 add_executable( boost_asio_server "./server.cpp" )
 
 target_link_libraries(boost_asio_server PUBLIC
-    PRIVATE boost_system
+    PUBLIC boost_system
 )
 
 # Add client executable
 add_executable( boost_asio_client "./client.cpp" )
 
 target_link_libraries(boost_asio_client PUBLIC
-    PRIVATE boost_system
+    PUBLIC boost_system
 )

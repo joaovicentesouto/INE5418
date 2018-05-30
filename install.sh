@@ -15,8 +15,8 @@ cmake ..
 echo "Run make"
 make
 
-echo "Entering distributed_systems"
-cd distributed_systems
+# echo "Entering distributed_systems"
+# cd distributed_systems
 
-echo "Executes executable"
-./distributed_systems_executable
+# echo "Executes executable"
+# ./distributed_systems_executable

@@ -23,6 +23,7 @@ set(distributed_systems_VERSION 0.1)
 
 # Set c++14 globally
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 # Set distributed_systems source dir
 set(distributed_systems_source_dir ${PROJECT_SOURCE_DIR})
@@ -32,7 +33,7 @@ set(distributed_systems_source_dir ${PROJECT_SOURCE_DIR})
 ################################################################################
 
 # Find Boost
-find_package(Boost 1.59 REQUIRED)
+find_package(Boost 1.58 REQUIRED)
 
 ################################################################################
 # Project logic 
