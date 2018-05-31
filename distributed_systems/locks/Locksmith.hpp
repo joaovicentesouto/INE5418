@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <utility>
 #include <functional>
+#include <mutex>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 

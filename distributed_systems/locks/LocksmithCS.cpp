@@ -41,20 +41,19 @@ void LocksmithCS::lunlock()
 
 void LocksmithCS::server_rises()
 {
+    using mutex_type = std::mutex;
+
+    mutex_type mutex;
     io_service_type server_service;
-    auto x = boost::bind(&io_service_type::run, &server_service);
-    std::thread t(x);
     type::tcp::acceptor_type acceptor(server_service, type::tcp::address_type(type::ip::tcp::v4(), 6789));
     std::cout << "-- 1 Servidor criado\n";
 
-    while (true)
+    std::function<void(socket_type, mutex_type*)> session = [](socket_type sock, mutex_type* mutex)
     {
-        socket_type sock(server_service);
-        acceptor.accept(sock);
-        std::cout << "-- 2 Servidor aceita conexão\n";
-
         try
         {
+            mutex->lock();
+
             char requester[25];
 
             //! Recebe nome do requisitante
@@ -79,14 +78,29 @@ void LocksmithCS::server_rises()
             std::cout << "-- 6 Servidor recebe chave e continua\n";
 
             if (error == boost::asio::error::eof)
+            {
+                mutex->unlock();
                 return; // Connection closed cleanly by peer.
+            }
             else if (error)
+            {
+                mutex->unlock();
                 throw boost::system::system_error(error); // Some other error.
+            }
         }
         catch (std::exception& e)
         {
+            mutex->unlock();
             std::cerr << "Exception in thread: " << e.what() << "\n";
         }
+    };
+
+    while (true)
+    {
+        socket_type sock(server_service);
+        acceptor.accept(sock);
+        std::cout << "-- 2 Servidor aceita conexão\n";
+        std::thread(session, std::move(sock), &mutex).detach();
     }
 }
 
