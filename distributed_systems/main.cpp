@@ -71,12 +71,12 @@ int main(int argc, char *argv[])
             in.close();
         }
 
+        std::cout << "Event: " << field.m_count
+                  << " | Predecessor: " << field.m_container_name << std::endl;
+
         /* ----- WRITE MODE ----- */
 
         std::ofstream out(shared_file_path, std::ios::binary | std::ios::trunc);
-
-        std::cout << "Event: " << field.m_count
-                  << " | Predecessor: " << field.m_container_name << std::endl;
 
         field.m_container_name = hostname;
         field.m_count++;

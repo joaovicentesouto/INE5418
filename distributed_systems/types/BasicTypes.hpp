@@ -9,8 +9,8 @@ namespace type
     // Namespace member types
     using string_type = std::string;
 
-    namespace asio    = boost::asio;
-    namespace ip      = asio::ip;
+    namespace network = boost::asio;
+    namespace ip      = network::ip;
 }   // namespace types
 
 #endif  // BASIC_TYPES_HPP

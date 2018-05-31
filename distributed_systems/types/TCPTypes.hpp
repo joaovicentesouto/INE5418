@@ -10,7 +10,7 @@ namespace tcp
     // Namespace member types
     using port_type       = const unsigned short;
     
-    using io_service_type = asio::io_service;
+    using io_service_type = network::io_service;
     using protocol_type   = ip::tcp;
 
     using address_type    = protocol_type::endpoint;

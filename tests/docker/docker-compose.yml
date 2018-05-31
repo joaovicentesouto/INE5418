@@ -9,11 +9,10 @@ services:
     container_name: container1
     hostname: container1
     environment:
-      - LEFT_BROTHER=container3
-      - RIGHT_BROTHER=container2
-      - SERVER_ADDRESS=container1
+      - CONTAINERS_AMOUNT=3
+      - SERVER_NAME=container1
       - HIBERNATION_TIME=1
-      - SHARED_FILE=/shared_content/shared_object.txt
+      - SHARED_FILE=/shared_content/shared_object.dat
     volumes:
       - ./shared_content:/shared_content
     #tty: true                  # iterative
@@ -25,11 +24,10 @@ services:
     container_name: container2
     hostname: container2
     environment:
-      - LEFT_BROTHER=container1
-      - RIGHT_BROTHER=container3
-      - SERVER_ADDRESS=container1
+      - CONTAINERS_AMOUNT=3
+      - SERVER_NAME=container1
       - HIBERNATION_TIME=3
-      - SHARED_FILE=/shared_content/shared_object.txt
+      - SHARED_FILE=/shared_content/shared_object.dat
     volumes:
       - ./shared_content:/shared_content
     #tty: true                  # iterative
@@ -41,11 +39,10 @@ services:
     container_name: container3
     hostname: container3
     environment:
-      - LEFT_BROTHER=container2
-      - RIGHT_BROTHER=container1
-      - SERVER_ADDRESS=container1
+      - CONTAINERS_AMOUNT=3
+      - SERVER_NAME=container1
       - HIBERNATION_TIME=5
-      - SHARED_FILE=/shared_content/shared_object.txt
+      - SHARED_FILE=/shared_content/shared_object.dat
     volumes:
       - ./shared_content:/shared_content
     #tty: true                  # iterative

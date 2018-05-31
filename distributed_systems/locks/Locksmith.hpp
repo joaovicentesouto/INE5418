@@ -1,6 +1,12 @@
 #ifndef LOCKSMITH_HPP
 #define LOCKSMITH_HPP
 
+#include <thread>
+#include <iostream>
+#include <cstdlib>
+#include <utility>
+#include <boost/asio.hpp>
+
 namespace locks
 {
     class Locksmith

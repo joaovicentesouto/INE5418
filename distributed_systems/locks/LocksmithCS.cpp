@@ -3,57 +3,89 @@
 namespace locks
 {
 
-LocksmithCS::LocksmithCS()
+LocksmithCS::LocksmithCS() :
+    m_hostname(type::ip::host_name()),
+    m_server_name(std::getenv("SERVER_NAME")),
+    m_client_service(),
+    m_client(m_client_service)
 {
-    std::cout << "Server: ";
-    const char* server_address = std::getenv("SERVER_ADDRESS");
-    if (server_address)
-    {
-        std::cout << server_address << '\n';
-    }
-
-    std::cout << "Host: ";
-    auto hostname = type::ip::host_name();
-    std::cout << hostname << '\n';
-    /*
-        if ( m_server_addr == meu_ip )
-            Cria uma thread para ser o servidor.
-        else
-            Não faz nada, quando a thread main chamar lock então conversa com o servidor.
-    */
+    if (m_hostname == "container1")
+        std::thread(&LocksmithCS::server_rises, this).detach();
 }
 
 void LocksmithCS::llock()
 {
-    /*
-        UTILIZAR UMA THREAD PARA O CLIENTE:
-            ** utiliza mutex
-        - Elaborar ...
+    resolver_type resolver(m_client_service);
 
-        SEM THREAD:
-            ** utiliza atributo da classe para a conexão
-        - Cria-se conexão com o servidor.
-        - Utilizar chamada bloqueante com o servidor esperando a
-        chance de poder executar.
-        - Atendido pelo servidor então podemos ir.
-        - Servidor fica esperando pela confirmação da saída da zona crítica.
-        - Sai do escopo dessa função.
-    */
+    std::cout << "++ 1 Cliente chama connect\n";
+    type::network::connect(m_client, resolver.resolve(query_type(m_server_name, "6789")));
+
+    std::cout << "++ 2 Cliente envia requisição\n";
+    type::network::write(m_client, type::network::buffer(m_hostname, m_hostname.size()));
+
+    std::cout << "++ 3 Cliente espera confirmação\n";
+    char reply[m_hostname.size()];
+    type::network::read(m_client, type::network::buffer(reply, m_hostname.size()));
+
+    std::cout << "++ 4 Cliente tem a chave e vai fazer o que quiser\n\n";
 }
 
 void LocksmithCS::lunlock()
 {
-    /*
-        UTILIZAR UMA THREAD PARA O CLIENTE:
-            ** utiliza mutex
-        - Elaborar ...
+    std::cout << "++ 5 Cliente devolve a chave\n";
+    type::network::write(m_client, type::network::buffer(m_hostname, m_hostname.size()));
 
-        SEM THREAD:
-            ** utiliza atributo da classe para a conexão
-        - Avisa o servidor que saiu da zona crítica.
-        - Finaliza conexão.
-        - Sai do escopo dessa função.
-    */
+    m_client.close();
+    std::cout << "++ 6 Cliente fecha conexão e volta ao estado normal\n";
+}
+
+void LocksmithCS::server_rises()
+{
+    io_service_type server_service;
+    type::tcp::acceptor_type acceptor(server_service, type::tcp::address_type(type::ip::tcp::v4(), 6789));
+    std::cout << "-- 1 Servidor criado\n";
+
+    while (true)
+    {
+        socket_type sock(server_service);
+        acceptor.accept(sock);
+        std::cout << "-- 2 Servidor aceita conexão\n";
+
+        try
+        {
+            char requester[25];
+
+            //! Recebe nome do requisitante
+            boost::system::error_code error;
+
+            size_t length = sock.read_some(boost::asio::buffer(requester), error);
+            std::cout << "-- 3 Servidor recebe requisicao de: " << requester << std::endl;
+
+            if (error == boost::asio::error::eof) //! precisa desse primeiro erro?
+                return; // Connection closed cleanly by peer.
+            else if (error)
+                throw boost::system::system_error(error); // Some other error.
+
+            //! Envia chave... (nome do requisitante)
+            std::cout << "-- 4 Servidor responde, entregando a chave\n";
+            boost::asio::write(sock, boost::asio::buffer(requester, length));
+
+            //! Recebe chave devolta... (nome do requisitante)
+            std::cout << "-- 5 Servidor aguarda retorno da chave\n";
+            length = sock.read_some(boost::asio::buffer(requester), error);
+
+            std::cout << "-- 6 Servidor recebe chave e continua\n";
+
+            if (error == boost::asio::error::eof)
+                return; // Connection closed cleanly by peer.
+            else if (error)
+                throw boost::system::system_error(error); // Some other error.
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Exception in thread: " << e.what() << "\n";
+        }
+    }
 }
 
 } // namespace lock
