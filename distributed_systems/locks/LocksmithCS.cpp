@@ -9,8 +9,10 @@ LocksmithCS::LocksmithCS() :
     m_client_service(),
     m_client(m_client_service)
 {
-    if (m_hostname == "container1")
+    if (m_hostname == m_server_name)
         std::thread(&LocksmithCS::server_rises, this).detach();
+
+    sleep(1);
 }
 
 void LocksmithCS::llock()
@@ -18,7 +20,7 @@ void LocksmithCS::llock()
     resolver_type resolver(m_client_service);
 
     std::cout << "++ 1 Cliente chama connect\n";
-    type::network::connect(m_client, resolver.resolve(query_type(m_server_name, "6789")));
+    type::network::connect(m_client, resolver.resolve(query_type(m_server_name, "62000")));
 
     std::cout << "++ 2 Cliente envia requisição\n";
     type::network::write(m_client, type::network::buffer(m_hostname, m_hostname.size()));
@@ -43,17 +45,10 @@ void LocksmithCS::server_rises()
 {
     using mutex_type = std::mutex;
 
-    mutex_type mutex;
-    io_service_type server_service;
-    type::tcp::acceptor_type acceptor(server_service, type::tcp::address_type(type::ip::tcp::v4(), 6789));
-    std::cout << "-- 1 Servidor criado\n";
-
     std::function<void(socket_type, mutex_type*)> session = [](socket_type sock, mutex_type* mutex)
     {
         try
         {
-            mutex->lock();
-
             char requester[25];
 
             //! Recebe nome do requisitante
@@ -66,6 +61,8 @@ void LocksmithCS::server_rises()
                 return; // Connection closed cleanly by peer.
             else if (error)
                 throw boost::system::system_error(error); // Some other error.
+
+            mutex->lock();
 
             //! Envia chave... (nome do requisitante)
             std::cout << "-- 4 Servidor responde, entregando a chave\n";
@@ -87,6 +84,8 @@ void LocksmithCS::server_rises()
                 mutex->unlock();
                 throw boost::system::system_error(error); // Some other error.
             }
+
+            mutex->unlock();
         }
         catch (std::exception& e)
         {
@@ -94,6 +93,11 @@ void LocksmithCS::server_rises()
             std::cerr << "Exception in thread: " << e.what() << "\n";
         }
     };
+
+    mutex_type mutex;
+    io_service_type server_service;
+    type::tcp::acceptor_type acceptor(server_service, type::tcp::address_type(type::ip::tcp::v4(), 62000));
+    std::cout << "-- 1 Servidor criado\n";
 
     while (true)
     {

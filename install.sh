@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 echo "* * * Entering INE5418"
-cd INE5418
+cd distr
 
 echo "* * * Creating build folder"
 mkdir build
