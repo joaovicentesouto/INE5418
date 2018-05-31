@@ -42,6 +42,8 @@ void LocksmithCS::lunlock()
 void LocksmithCS::server_rises()
 {
     io_service_type server_service;
+    auto x = boost::bind(&io_service_type::run, &server_service);
+    std::thread t(x);
     type::tcp::acceptor_type acceptor(server_service, type::tcp::address_type(type::ip::tcp::v4(), 6789));
     std::cout << "-- 1 Servidor criado\n";
 

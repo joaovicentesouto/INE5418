@@ -5,7 +5,9 @@
 #include <iostream>
 #include <cstdlib>
 #include <utility>
+#include <functional>
 #include <boost/asio.hpp>
+#include <boost/thread.hpp>
 
 namespace locks
 {
