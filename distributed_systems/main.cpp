@@ -7,11 +7,9 @@
 #include "locks/LocksmithMulticast.hpp"
 #include "locks/LocksmithToken.hpp"
 
-locks::Locksmith *locksmith;
-
 struct Field
 {
-    type::string_type m_container_name{"No owner"};
+    char m_container_name[100] = "container-";
     size_t m_count{0u};
 };
 
@@ -22,9 +20,11 @@ int main(int argc, char *argv[])
         std::cout << "Please inform the desired synchronization algorithm:\n"
                   << "1: Client/server\n"
                   << "2: Lamport/Multicast\n"
-                  << "3: Queue\n";
+                  << "3: Queue\n" << std::flush;
         return 1;
     }
+
+    locks::Locksmith *locksmith;
 
     switch (std::stoi(argv[1]))
     {
@@ -38,38 +38,40 @@ int main(int argc, char *argv[])
         locksmith = new locks::LocksmithToken();
         break;
     default:
-        std::cout << "Invalid option.\n";
+        std::cout << "Invalid option.\n" << std::flush;
         return 1;
     }
 
     /* ----- Environment variables ----- */
-    const char *shared_file_path = std::getenv("SHARED_FILE");
-    const char *hibernation_time = std::getenv("HIBERNATION_TIME");
-    auto hostname = type::ip::host_name();
+    type::string_type shared_file_path{std::getenv("SHARED_FILE")};
+    type::string_type hibernation_time{std::getenv("HIBERNATION_TIME")};
+    type::string_type hostname{type::ip::host_name()};
 
-    if (!shared_file_path || !hibernation_time)
+    if (shared_file_path.empty() || hibernation_time.empty())
     {
-        std::cout << "Could not read environment variables.\n";
+        std::cout << "Could not read environment variables.\n" << std::flush;
         return 1;
     }
 
+    Field field;
+
     int count = 0;
-    while (count++ < 6)
+    while (count++ < 100)
     {
         locksmith->llock();
 
         /* ----- READ MODE ----- */
 
-        Field field;
         std::ifstream in(shared_file_path, std::ifstream::binary);
 
         if (in.is_open())
         {
             in.seekg(0, in.beg);
             in.read(reinterpret_cast<char *>(&field), sizeof(Field));
-
-            in.close();
         }
+
+        in.close();
+        in.clear();
 
         std::cout << "Event: " << field.m_count
                   << " | Predecessor: " << field.m_container_name << std::endl;
@@ -77,8 +79,8 @@ int main(int argc, char *argv[])
         /* ----- WRITE MODE ----- */
 
         std::ofstream out(shared_file_path, std::ios::binary | std::ios::trunc);
-
-        field.m_container_name = hostname;
+        
+        strcpy(field.m_container_name, hostname.c_str());
         field.m_count++;
 
         out.write(reinterpret_cast<char *>(&field), sizeof(Field));
@@ -87,6 +89,7 @@ int main(int argc, char *argv[])
                   << " | Current    : " << field.m_container_name << std::endl << std::endl;
 
         out.close();
+        out.clear();
 
         locksmith->lunlock();
 
