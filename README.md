@@ -4,6 +4,7 @@
 ## Index:
 * [Description](#description)
 * [Assignment](#assignment)
+* [How execute](#how_exec)
 * [Credits](#credits)
 
 # Description
@@ -16,6 +17,10 @@ Implement the three mutual exclusion algorithms for distributed system studied i
 * Ring-based (token passing);
 * Based on Server / Coordinator;
 * Based on Multicast and Logical Watches
+
+## How execute
+
+[![asciicast](https://asciinema.org/a/184933.png)](https://asciinema.org/a/184933)
 
 # Credits
 
