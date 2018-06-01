@@ -11,6 +11,8 @@ LocksmithCS::LocksmithCS() :
 {
     if (m_hostname == m_server_name)
         std::thread(&LocksmithCS::server_rises, this).detach();
+
+    sleep(1); //! Wait Servicor activate.
 }
 
 void LocksmithCS::llock()
