@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     /* ----- Environment variables ----- */
     type::string_type shared_file_path{std::getenv("SHARED_FILE")};
     type::string_type hibernation_time{std::getenv("HIBERNATION_TIME")};
-    type::string_type hostname{type::ip::host_name()};
+    type::string_type hostname = type::string_type("container") + std::getenv("ID");
 
     if (shared_file_path.empty() || hibernation_time.empty())
     {
@@ -73,8 +73,8 @@ int main(int argc, char *argv[])
         in.close();
         in.clear();
 
-        std::cout << "Event: " << field.m_count
-                  << " | Predecessor: " << field.m_container_name << std::endl;
+        std::cout << std::endl << std::endl << "Event: " << field.m_count
+                  << " | Predecessor: " << field.m_container_name << std::endl << std::flush;
 
         /* ----- WRITE MODE ----- */
 
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
         out.write(reinterpret_cast<char *>(&field), sizeof(Field));
 
         std::cout << "Event: " << field.m_count
-                  << " | Current    : " << field.m_container_name << std::endl << std::endl;
+                  << " | Current    : " << field.m_container_name << std::endl << std::endl << std::flush;
 
         out.close();
         out.clear();

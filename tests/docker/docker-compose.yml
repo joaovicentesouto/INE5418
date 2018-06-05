@@ -9,6 +9,7 @@ services:
     container_name: container1
     hostname: container1
     environment:
+      - ID=1
       - CONTAINERS_AMOUNT=3
       - SERVER_NAME=container1
       - HIBERNATION_TIME=1
@@ -28,6 +29,7 @@ services:
     depends_on:
       - cont1
     environment:
+      - ID=2
       - CONTAINERS_AMOUNT=3
       - SERVER_NAME=container1
       - HIBERNATION_TIME=3
@@ -45,6 +47,7 @@ services:
     depends_on:
       - cont1
     environment:
+      - ID=3
       - CONTAINERS_AMOUNT=3
       - SERVER_NAME=container1
       - HIBERNATION_TIME=5
