@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     /* ----- Environment variables ----- */
     type::string_type shared_file_path{std::getenv("SHARED_FILE")};
     type::string_type hibernation_time{std::getenv("HIBERNATION_TIME")};
-    type::string_type hostname{type::ip::host_name()};
+    type::string_type hostname = type::string_type("container") + std::getenv("ID");
 
     if (shared_file_path.empty() || hibernation_time.empty())
     {
