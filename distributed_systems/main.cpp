@@ -73,8 +73,8 @@ int main(int argc, char *argv[])
         in.close();
         in.clear();
 
-        std::cout << "Event: " << field.m_count
-                  << " | Predecessor: " << field.m_container_name << std::endl;
+        std::cout << std::endl << std::endl << "Event: " << field.m_count
+                  << " | Predecessor: " << field.m_container_name << std::endl << std::flush;
 
         /* ----- WRITE MODE ----- */
 
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
         out.write(reinterpret_cast<char *>(&field), sizeof(Field));
 
         std::cout << "Event: " << field.m_count
-                  << " | Current    : " << field.m_container_name << std::endl << std::endl;
+                  << " | Current    : " << field.m_container_name << std::endl << std::endl << std::flush;
 
         out.close();
         out.clear();

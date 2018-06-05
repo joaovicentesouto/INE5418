@@ -12,7 +12,7 @@ LocksmithCS::LocksmithCS() :
     if (m_hostname == m_server_name)
         std::thread(&LocksmithCS::server_rises, this).detach();
 
-    sleep(1); //! Wait Servicor activate.
+//    sleep(1); //! Wait Servicor activate.
 }
 
 void LocksmithCS::llock()
@@ -40,10 +40,14 @@ void LocksmithCS::lunlock()
 
 void LocksmithCS::server_rises()
 {
-    using mutex_type = std::mutex;
+    io_service_type server_service;
+    type::tcp::acceptor_type acceptor(server_service, type::tcp::address_type(type::ip::tcp::v4(), 62000));
 
-    std::function<void(socket_type, mutex_type*)> session = [](socket_type sock, mutex_type* mutex)
+    while (true)
     {
+        socket_type sock(server_service);
+        acceptor.accept(sock);
+
         try
         {
             char requester[100];
@@ -52,13 +56,14 @@ void LocksmithCS::server_rises()
             boost::system::error_code error;
 
             size_t length = sock.read_some(type::network::buffer(requester), error);
+            std::cout << "*** Recebe requisição de: " << requester << std::endl << std::flush;
 
             if (error == type::network::error::eof) //! precisa desse primeiro erro?
                 return; // Connection closed cleanly by peer.
             else if (error)
                 throw boost::system::system_error(error); // Some other error.
 
-            mutex->lock();
+            std::cout << "*** Envia chave para: " << requester << std::endl << std::flush;
 
             //! Envia chave... (nome do requisitante)
             type::network::write(sock, type::network::buffer(requester, length));
@@ -66,35 +71,22 @@ void LocksmithCS::server_rises()
             //! Recebe chave devolta... (nome do requisitante)
             length = sock.read_some(type::network::buffer(requester), error);
 
+            std::cout << "*** Recebe chave de: " << requester << std::endl << std::flush;
+
             if (error == type::network::error::eof)
             {
-                mutex->unlock();
                 return; // Connection closed cleanly by peer.
             }
             else if (error)
             {
-                mutex->unlock();
                 throw boost::system::system_error(error); // Some other error.
             }
 
-            mutex->unlock();
         }
         catch (std::exception& e)
         {
-            mutex->unlock();
             std::cerr << "Exception in thread: " << e.what() << "\n" << std::flush;
         }
-    };
-
-    mutex_type mutex;
-    io_service_type server_service;
-    type::tcp::acceptor_type acceptor(server_service, type::tcp::address_type(type::ip::tcp::v4(), 62000));
-
-    while (true)
-    {
-        socket_type sock(server_service);
-        acceptor.accept(sock);
-        std::thread(session, std::move(sock), &mutex).detach();
     }
 }
 
