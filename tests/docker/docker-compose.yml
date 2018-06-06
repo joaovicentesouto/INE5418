@@ -16,7 +16,6 @@ services:
       - SHARED_FILE=/shared_content/shared_object.dat
     volumes:
       - ./shared_content:/shared_content
-      - /home/joaovicente/code/INE5418:/INE5418
     expose:
       - "62000"
     # tty: true                  # iterative
@@ -37,7 +36,6 @@ services:
       - SHARED_FILE=/shared_content/shared_object.dat
     volumes:
       - ./shared_content:/shared_content
-      - /home/joaovicente/code/INE5418:/INE5418
     expose:
       - "62000"
     # tty: true                  # iterative
@@ -58,7 +56,6 @@ services:
       - SHARED_FILE=/shared_content/shared_object.dat
     volumes:
       - ./shared_content:/shared_content
-      - /home/joaovicente/code/INE5418:/INE5418
     expose:
       - "62000"
     # tty: true                  # iterative
