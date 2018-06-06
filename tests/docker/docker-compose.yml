@@ -2,20 +2,42 @@ version: '3'
 
 services:
 
+  cont0:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: container0
+    hostname: container0
+    environment:
+      - ID=0
+      - CONTAINERS_AMOUNT=3
+      - SERVER_NAME=container0
+      - HIBERNATION_TIME=1
+      - SHARED_FILE=/shared_content/shared_object.dat
+    volumes:
+      - ./shared_content:/shared_content
+      - /home/joaovicente/code/INE5418:/INE5418
+    expose:
+      - "62000"
+    # tty: true                  # iterative
+
   cont1:
     build:
       context: ./
       dockerfile: Dockerfile
     container_name: container1
     hostname: container1
+    depends_on:
+      - cont0
     environment:
       - ID=1
       - CONTAINERS_AMOUNT=3
-      - SERVER_NAME=container1
-      - HIBERNATION_TIME=1
+      - SERVER_NAME=container0
+      - HIBERNATION_TIME=3
       - SHARED_FILE=/shared_content/shared_object.dat
     volumes:
       - ./shared_content:/shared_content
+      - /home/joaovicente/code/INE5418:/INE5418
     expose:
       - "62000"
     # tty: true                  # iterative
@@ -27,31 +49,16 @@ services:
     container_name: container2
     hostname: container2
     depends_on:
-      - cont1
+      - cont0
     environment:
       - ID=2
       - CONTAINERS_AMOUNT=3
-      - SERVER_NAME=container1
-      - HIBERNATION_TIME=3
-      - SHARED_FILE=/shared_content/shared_object.dat
-    volumes:
-      - ./shared_content:/shared_content
-    # tty: true                  # iterative
-
-  cont3:
-    build:
-      context: ./
-      dockerfile: Dockerfile
-    container_name: container3
-    hostname: container3
-    depends_on:
-      - cont1
-    environment:
-      - ID=3
-      - CONTAINERS_AMOUNT=3
-      - SERVER_NAME=container1
+      - SERVER_NAME=container0
       - HIBERNATION_TIME=5
       - SHARED_FILE=/shared_content/shared_object.dat
     volumes:
       - ./shared_content:/shared_content
+      - /home/joaovicente/code/INE5418:/INE5418
+    expose:
+      - "62000"
     # tty: true                  # iterative
