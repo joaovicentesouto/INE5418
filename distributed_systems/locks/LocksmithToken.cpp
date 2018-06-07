@@ -7,7 +7,7 @@ LocksmithToken::LocksmithToken() :
     m_next_name(string_type("container") + std::to_string((std::stoi(std::getenv("ID"))+1) % std::stoi(std::getenv("CONTAINERS_AMOUNT")))),
     m_hostname(string_type("container") + std::getenv("ID"))
 {
-    std::thread(&LocksmithToken::ring_algorithm, this).detach();
+    type::thread_type(&LocksmithToken::ring_algorithm, this).detach();
     sleep(1);
 }
 
@@ -34,14 +34,14 @@ void LocksmithToken::ring_algorithm()
         resolver_type resolver(udp_server);
         auto destiny = *resolver.resolve(query_type(type::ip::udp::v4(), m_next_name, "62000"));
 
-        boost::system::error_code ignored_error;
+        type::error_type ignored_error;
         sock.send_to(type::network::buffer(message), destiny, 0, ignored_error);
     }
 
     while (true)
     {
         type::udp::address_type predecessor;
-        boost::system::error_code error;
+        type::error_type error;
 
         sock.receive_from(type::network::buffer(message), predecessor, 0, error);
 
@@ -53,7 +53,7 @@ void LocksmithToken::ring_algorithm()
         resolver_type resolver(udp_server);
         auto destiny = *resolver.resolve(query_type(type::ip::udp::v4(), m_next_name, "62000"));
 
-        boost::system::error_code ignored_error;
+        type::error_type ignored_error;
         sock.send_to(type::network::buffer(message), destiny, 0, ignored_error);
     }
 }

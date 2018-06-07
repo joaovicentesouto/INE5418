@@ -53,7 +53,7 @@ void LocksmithCS::server_rises()
 
         try
         {
-            boost::system::error_code error;
+            type::error_type error;
 
             // Recebe nome do requisitante
             size_t length = sock.read_some(type::network::buffer(requester), error);

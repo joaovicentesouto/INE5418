@@ -11,6 +11,8 @@ services:
     environment:
       - ID=0
       - CONTAINERS_AMOUNT=3
+      - MULTCAST_REQUEST=239.255.0.1
+      - MULTCAST_CONFIRM=239.255.0.115
       - SERVER_NAME=container0
       - HIBERNATION_TIME=1
       - SHARED_FILE=/shared_content/shared_object.dat

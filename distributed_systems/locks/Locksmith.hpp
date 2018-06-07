@@ -1,14 +1,11 @@
-#ifndef LOCKSMITH_HPP
-#define LOCKSMITH_HPP
+#ifndef LOCKS_LOCKSMITH_HPP
+#define LOCKS_LOCKSMITH_HPP
 
-#include <thread>
 #include <iostream>
 #include <cstdlib>
 #include <utility>
 #include <functional>
-#include <mutex>
-#include <boost/asio.hpp>
-#include <boost/thread.hpp>
+#include <distributed_systems/types/BasicTypes.hpp>
 
 namespace locks
 {
@@ -23,4 +20,4 @@ namespace locks
     };
 }   // namespace lock
 
-#endif // LOCKSMITH_HPP
+#endif // LOCKS_LOCKSMITH_HPP

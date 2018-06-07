@@ -1,5 +1,5 @@
-#ifndef LOCKS_CS_HPP
-#define LOCKS_CS_HPP
+#ifndef LOCKS_LOCKSMITHCS_HPP
+#define LOCKS_LOCKSMITHCS_HPP
 
 #include "Locksmith.hpp"
 #include <distributed_systems/types/TCPTypes.hpp>
@@ -42,4 +42,4 @@ namespace locks
 
 }   // namespace lock
 
-#endif  // LOCKS_CS_HPP
+#endif  // LOCKS_LOCKSMITHCS_HPP

@@ -1,5 +1,5 @@
-#ifndef LOCKS_TOKEN_HPP
-#define LOCKS_TOKEN_HPP
+#ifndef LOCKS_LOCKSMITH_TOKEN_HPP
+#define LOCKS_LOCKSMITH_TOKEN_HPP
 
 #include "Locksmith.hpp"
 #include <distributed_systems/types/UDPTypes.hpp>
@@ -36,9 +36,9 @@ namespace locks
         const string_type m_next_name;
         const string_type m_hostname;
 
-        std::mutex m_mutex;
+        type::mutex_type m_mutex;
     };
 
 }   // namespace lock
 
-#endif  // LOCKS_TOKEN_HPP
+#endif  // LOCKS_LOCKSMITH_TOKEN_HPP
