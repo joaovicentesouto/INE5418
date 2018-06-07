@@ -12,11 +12,11 @@ namespace locks
         using string_type = type::string_type;
 
         Key() = default;
-        Key(size_t age, string_type owner);
+        Key(unsigned age, string_type owner);
 
         bool operator<(const Key& another_key);
 
-        size_t m_clock{0};
+        unsigned m_clock{0};
         char   m_owner[100] = "owenerless";
         bool   m_type{false}; //! true: ok, false: request
     };
@@ -50,8 +50,8 @@ namespace locks
         void lamport_algorithm();
         void handle_receive_from(const type::error_type& error, size_t bytes_recvd);
 
-        type::mutex_type    m_critical_mutex, m_request_mutex;
-        size_t              m_clock;
+        type::mutex_type    m_critical_mutex;
+        type::mutex_type    m_request_mutex;
         const size_t        m_id, m_containers_amount;
         const string_type   m_hostname;
         const endpoint_type m_host_endpoint;
@@ -59,7 +59,7 @@ namespace locks
 
         type::network::io_service     m_udp_service;
         type::udp::socket_type        m_socket;
-        type::udp::endpoints_set_type m_oks;
+        std::set<string_type> m_oks;
 
         Key m_key;
         bool m_critical_region_request{false};

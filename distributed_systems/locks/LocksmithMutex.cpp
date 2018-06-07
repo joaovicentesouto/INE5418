@@ -3,7 +3,7 @@
 namespace locks
 {
 
-bool LocksmithMutex::swap()
+void LocksmithMutex::swap()
 {
     type::mutex_type m_helper_mutex;
     type::unique_lock_type lck(m_helper_mutex);

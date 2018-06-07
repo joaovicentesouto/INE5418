@@ -3,19 +3,19 @@
 namespace locks
 {
 
-Key::Key(size_t age, string_type owner) : m_clock(age)
+Key::Key(unsigned age, string_type owner) : m_clock(age)
 {
     strcpy(m_owner, owner.c_str());
 }
 
-bool Key::operator<(const Key& another_key)
+bool Key::operator<(const Key &another_key)
 {
     return m_clock < another_key.m_clock;
 }
 
 LocksmithMulticast::LocksmithMulticast() : m_id(std::stoi(std::getenv("ID"))),
-                                           m_clock(m_id),
                                            m_hostname(string_type("container") + std::getenv("ID")),
+                                           m_key(m_id, m_hostname),
                                            m_host_endpoint(type::ip::udp::v4(), 62000),
                                            m_containers_amount(std::stoi(std::getenv("CONTAINERS_AMOUNT"))),
                                            m_request_addr(type::ip::address::from_string(std::getenv("MULTCAST_REQUEST"))),
@@ -28,98 +28,151 @@ LocksmithMulticast::LocksmithMulticast() : m_id(std::stoi(std::getenv("ID"))),
     m_socket.bind(m_host_endpoint);
     m_socket.set_option(type::ip::multicast::join_group(m_request_addr));
 
-    m_critical_mutex.lock();
+    // m_socket.set_option(type::ip::multicast::join_group(m_confirm_addr));
 
     type::thread_type(&LocksmithMulticast::lamport_algorithm, this).detach();
+
+    sleep(10);
 }
 
 void LocksmithMulticast::llock()
 {
+    // // std::cout << "Preparando para dar lock\n" << std::flush;
     m_request_mutex.lock();
 
     m_critical_region_request = true;
 
     type::error_type ignored_error;
 
-    m_socket.set_option(type::ip::multicast::join_group(m_confirm_addr));
+    // // std::cout << "* entre no confirm\n" << std::flush;
+//    m_socket.set_option(type::ip::multicast::join_group(m_confirm_addr));
+
+    m_key.m_type = false;
     type::udp::endpoint_type multicast_req(m_request_addr, 62000);
+
+    // // std::cout << "Preparando para enviar multicast req\n" << std::flush;
     m_socket.send_to(type::network::buffer(reinterpret_cast<char *>(&m_key), sizeof(m_key)), multicast_req, 0, ignored_error);
+    // // std::cout << "Mandou\n" << std::flush;
 
     m_request_mutex.unlock();
 
+    // // std::cout << "Para no critical lock\n" << std::flush;
     m_critical_mutex.lock();
+    // // std::cout << "vou para a regiao critica\n" << std::flush;
 }
 
 void LocksmithMulticast::lunlock()
 {
+    // m_request_mutex.lock();
+    m_critical_region_request = false;
+    m_request_mutex.unlock();
+
     m_critical_mutex.unlock();
 }
 
 void LocksmithMulticast::lamport_algorithm()
 {
+     m_critical_mutex.lock();
+    // // std::cout << "* Thread criada\n" << std::flush;
     type::error_type error;
     type::udp::endpoint_type requester;
     Key question_key;
+    // type::udp::endpoint_type multicast_con(m_confirm_addr, 62000);
+    type::udp::endpoint_type multicast_req(m_request_addr, 62000);
 
     while (true)
     {
+
+        // std::cout << "* inicio loop\n" << std::flush;
         m_socket.receive_from(type::network::buffer(reinterpret_cast<char *>(&question_key), sizeof(Key)), requester, 0, error);
+
+
+        if (!strcmp(m_key.m_owner, question_key.m_owner))
+            continue;
 
         if (error)
             throw std::out_of_range("Erro ao receber a primeira mensagem.");
 
         m_request_mutex.lock();
 
+        // std::cout << "* quero regiao critica: " << m_critical_region_request << std::endl << std::flush;
         if (m_critical_region_request)
-        {   
+        {
             size_t major_clock = m_key.m_clock;
 
-            do
+            while (m_oks.size() < m_containers_amount - 1)
             {
+
+                if (!strcmp(m_key.m_owner, question_key.m_owner))
+                    continue;
+
+                // std::cout << "* recebe msg de " << question_key.m_owner << " com : " << question_key.m_clock << " x " << question_key.m_type << "\n" << std::flush;
+
                 if (question_key.m_type)
-                    m_oks.insert(requester);
+                {
+                    // std::cout << "* é um ok : size moks: " << m_oks.size() << std::endl << std::flush;
+                    m_oks.emplace(question_key.m_owner);
+                }
                 else
                 {
-                    if (m_oks.find(requester) != m_oks.end())
-                        continue;
+                    // // std::cout << "* eh request R: " << question_key.m_clock << "\n M: " << m_key.m_clock << std::endl << std::flush;
 
-                    if (m_key < question_key)
+                    if (m_oks.find(question_key.m_owner) == m_oks.end())
                     {
-                        m_oks.insert(requester);
-                        major_clock = major_clock < question_key.m_clock ? question_key.m_clock : major_clock;
+                        if (m_key < question_key)
+                        {
+                            // // std::cout << "* tenho prioridade\n" << std::flush;
+                            m_oks.emplace(question_key.m_owner);
+                        }
+                        else
+                        {
+                            // std::cout << "* nao tenho prio, manda ok para \n" << question_key.m_owner << std::flush;
+                            m_key.m_type = true;
+                            m_socket.send_to(type::network::buffer(reinterpret_cast<char *>(&m_key), sizeof(m_key)), requester, 0, error); //! ok
+                        }
                     }
-                    else
-                        m_socket.send_to(type::network::buffer(reinterpret_cast<char *>(&m_key), sizeof(m_key)), requester, 0, error); //! ok
                 }
-            } while (m_oks.size() < m_containers_amount - 1);
 
-            m_socket.set_option(type::ip::multicast::leave_group(m_confirm_addr));
-            m_socket.set_option(type::ip::multicast::leave_group(m_request_addr));
+                major_clock = major_clock < question_key.m_clock ? question_key.m_clock : major_clock;
 
+                // // std::cout << "* Espera outra\n" << std::flush;
+                question_key = Key();
+                if (m_oks.size() < m_containers_amount - 1)
+                    m_socket.receive_from(type::network::buffer(reinterpret_cast<char *>(&question_key), sizeof(Key)), requester, 0, error);
+                else
+                    continue;
+            }
+
+            // Send ok
+            // std::cout << "* confirm: " << m_oks.size() << "\n" << std::flush;
             m_critical_mutex.unlock();
+            m_request_mutex.lock();
+            
+            // std::cout << "* confirm: " << m_oks.size() << "\n" << std::flush;
             m_critical_mutex.lock();
+            m_request_mutex.unlock();
+            // std::cout << "* confirm: " << m_oks.size() << "\n" << std::flush;
 
-            major_clock =  major_clock + m_containers_amount;
+            major_clock = major_clock + m_containers_amount;
             m_key.m_clock = major_clock + (m_containers_amount - (major_clock % m_containers_amount));
             m_key.m_type = true;
-    
-            // Send ok
-            type::udp::endpoint_type multicast_con(m_confirm_addr, 62000);
-            m_socket.send_to(type::network::buffer(reinterpret_cast<char *>(&m_key), sizeof(m_key)), multicast_con, 0, error);
 
-            m_socket.set_option(type::ip::multicast::join_group(m_request_addr));
+            // Send ok
+            // // std::cout << "* envia confirm\n" << std::flush;
+            m_socket.send_to(type::network::buffer(reinterpret_cast<char *>(&m_key), sizeof(m_key)), multicast_req, 0, error);
+            m_oks.clear();
         }
         else
         {
+            m_request_mutex.unlock();
             // Modify ok
             if (!question_key.m_type)
             {
+                // std::cout << "* nao quero regiao . mandar ok: " << question_key.m_owner << "\n" << std::flush;
                 m_key.m_type = true;
                 m_socket.send_to(type::network::buffer(reinterpret_cast<char *>(&m_key), sizeof(m_key)), requester, 0, error);
             }
         }
-        
-        m_request_mutex.unlock();
     }
 }
 
