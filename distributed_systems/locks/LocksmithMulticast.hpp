@@ -11,11 +11,14 @@ namespace locks
     {
         using string_type = type::string_type;
 
+        Key() = default;
         Key(size_t age, string_type owner);
 
-        size_t m_clock;
-        char   m_owner[100];
-        bool   m_type; //! true: ok, false: request
+        bool operator<(const Key& another_key);
+
+        size_t m_clock{0};
+        char   m_owner[100] = "owenerless";
+        bool   m_type{false}; //! true: ok, false: request
     };
 
     class LocksmithMulticast : public Locksmith
@@ -47,7 +50,7 @@ namespace locks
         void lamport_algorithm();
         void handle_receive_from(const type::error_type& error, size_t bytes_recvd);
 
-        LocksmithMutex      m_mutex;
+        type::mutex_type    m_critical_mutex, m_request_mutex;
         size_t              m_clock;
         const size_t        m_id, m_containers_amount;
         const string_type   m_hostname;
@@ -59,7 +62,7 @@ namespace locks
         type::udp::endpoints_set_type m_oks;
 
         Key m_key;
-        endpoint_type m_requester;
+        bool m_critical_region_request{false};
     };
 
 }   // namespace lock

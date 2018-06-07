@@ -3,98 +3,124 @@
 namespace locks
 {
 
-Key::Key(size_t age, string_type owner) :
-    m_clock(age)
+Key::Key(size_t age, string_type owner) : m_clock(age)
 {
     strcpy(m_owner, owner.c_str());
 }
 
-LocksmithMulticast::LocksmithMulticast() :
-    m_id(std::stoi(std::getenv("ID"))),
-    m_clock(m_id),
-    m_hostname(string_type("container") + std::getenv("ID")),
-    m_host_endpoint(type::ip::udp::v4(), 62000),
-    m_containers_amount(std::stoi(std::getenv("CONTAINERS_AMOUNT"))),
-    m_request_addr(type::ip::address::from_string(std::getenv("MULTCAST_REQUEST"))),
-    m_confirm_addr(type::ip::address::from_string(std::getenv("MULTCAST_CONFIRM"))),
-    m_udp_service(),
-    m_socket(m_udp_service)
+bool Key::operator<(const Key& another_key)
+{
+    return m_clock < another_key.m_clock;
+}
+
+LocksmithMulticast::LocksmithMulticast() : m_id(std::stoi(std::getenv("ID"))),
+                                           m_clock(m_id),
+                                           m_hostname(string_type("container") + std::getenv("ID")),
+                                           m_host_endpoint(type::ip::udp::v4(), 62000),
+                                           m_containers_amount(std::stoi(std::getenv("CONTAINERS_AMOUNT"))),
+                                           m_request_addr(type::ip::address::from_string(std::getenv("MULTCAST_REQUEST"))),
+                                           m_confirm_addr(type::ip::address::from_string(std::getenv("MULTCAST_CONFIRM"))),
+                                           m_udp_service(),
+                                           m_socket(m_udp_service)
 {
     m_socket.open(m_host_endpoint.protocol());
     m_socket.set_option(type::ip::udp::socket::reuse_address(true));
     m_socket.bind(m_host_endpoint);
     m_socket.set_option(type::ip::multicast::join_group(m_request_addr));
 
+    m_critical_mutex.lock();
+
     type::thread_type(&LocksmithMulticast::lamport_algorithm, this).detach();
- 
-    sleep(1);
 }
 
 void LocksmithMulticast::llock()
 {
-    m_mutex.lock();
+    m_request_mutex.lock();
+
+    m_critical_region_request = true;
+
+    type::error_type ignored_error;
+
+    m_socket.set_option(type::ip::multicast::join_group(m_confirm_addr));
+    type::udp::endpoint_type multicast_req(m_request_addr, 62000);
+    m_socket.send_to(type::network::buffer(reinterpret_cast<char *>(&m_key), sizeof(m_key)), multicast_req, 0, ignored_error);
+
+    m_request_mutex.unlock();
+
+    m_critical_mutex.lock();
 }
 
 void LocksmithMulticast::lunlock()
 {
-    m_mutex.unlock();
+    m_critical_mutex.unlock();
 }
 
 void LocksmithMulticast::lamport_algorithm()
 {
-    m_mutex.lock(false);
+    type::error_type error;
+    type::udp::endpoint_type requester;
+    Key question_key;
 
-    m_socket.async_receive_from(
-        type::network::buffer(reinterpret_cast<char *>(&m_key), sizeof(m_key)), m_requester, 
-        boost::bind(&LocksmithMulticast::handle_receive_from, this, 
-          type::network::placeholders::error,
-          type::network::placeholders::bytes_transferred));
-
-    m_udp_service.run();
-}
-
-void LocksmithMulticast::handle_receive_from(const type::error_type& error, size_t bytes_recvd)
-{
-    type::error_type ignored_error;
-
-    if (!error && bytes_recvd > 0)
+    while (true)
     {
-        if (m_mutex.on_standyby())
-        {
-            m_socket.set_option(type::ip::multicast::join_group(m_confirm_addr));
-            
-            type::udp::endpoint_type multicast_req(m_request_addr, 62000);
-            m_socket.send_to(type::network::buffer(reinterpret_cast<char *>(&m_key), sizeof(m_key)), multicast_req, 0, ignored_error);
+        m_socket.receive_from(type::network::buffer(reinterpret_cast<char *>(&question_key), sizeof(Key)), requester, 0, error);
 
-            type::udp::endpoint_type m_responser;
-            while (m_oks.size() < m_containers_amount-1)
+        if (error)
+            throw std::out_of_range("Erro ao receber a primeira mensagem.");
+
+        m_request_mutex.lock();
+
+        if (m_critical_region_request)
+        {   
+            size_t major_clock = m_key.m_clock;
+
+            do
             {
-                m_socket.receive_from(type::network::buffer(reinterpret_cast<char *>(&m_key), sizeof(m_key)), m_responser, 0, ignored_error);
-
-                if (m_key.m_type)
-                    m_oks.insert(m_responser);
+                if (question_key.m_type)
+                    m_oks.insert(requester);
                 else
                 {
-                    if (m_clock < m_key.m_clock)
-                    {
+                    if (m_oks.find(requester) != m_oks.end())
+                        continue;
 
+                    if (m_key < question_key)
+                    {
+                        m_oks.insert(requester);
+                        major_clock = major_clock < question_key.m_clock ? question_key.m_clock : major_clock;
                     }
+                    else
+                        m_socket.send_to(type::network::buffer(reinterpret_cast<char *>(&m_key), sizeof(m_key)), requester, 0, error); //! ok
                 }
-            }
+            } while (m_oks.size() < m_containers_amount - 1);
+
+            m_socket.set_option(type::ip::multicast::leave_group(m_confirm_addr));
+            m_socket.set_option(type::ip::multicast::leave_group(m_request_addr));
+
+            m_critical_mutex.unlock();
+            m_critical_mutex.lock();
+
+            major_clock =  major_clock + m_containers_amount;
+            m_key.m_clock = major_clock + (m_containers_amount - (major_clock % m_containers_amount));
+            m_key.m_type = true;
+    
+            // Send ok
+            type::udp::endpoint_type multicast_con(m_confirm_addr, 62000);
+            m_socket.send_to(type::network::buffer(reinterpret_cast<char *>(&m_key), sizeof(m_key)), multicast_con, 0, error);
+
+            m_socket.set_option(type::ip::multicast::join_group(m_request_addr));
         }
         else
         {
-            m_socket.send_to(type::network::buffer(reinterpret_cast<char *>(&m_key), sizeof(m_key)), m_requester, 0, ignored_error);
+            // Modify ok
+            if (!question_key.m_type)
+            {
+                m_key.m_type = true;
+                m_socket.send_to(type::network::buffer(reinterpret_cast<char *>(&m_key), sizeof(m_key)), requester, 0, error);
+            }
         }
-    }
-    else
-    {
-        m_socket.async_receive_from(
-            type::network::buffer(reinterpret_cast<char *>(&m_key), sizeof(m_key)), m_requester, 
-            boost::bind(&LocksmithMulticast::handle_receive_from, this, 
-            type::network::placeholders::error,
-            type::network::placeholders::bytes_transferred));
+        
+        m_request_mutex.unlock();
     }
 }
 
-} // namespace lock
+} // namespace locks

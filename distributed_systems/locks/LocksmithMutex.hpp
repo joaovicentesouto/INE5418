@@ -5,17 +5,16 @@
 
 namespace locks
 {
-    class LocksmithMutex : private type::mutex_type {
+    class LocksmithMutex : public type::mutex_type {
     public:
         LocksmithMutex() = default;
 
-        void lock(bool main = true);
-        void unlock(bool main = true);
-        bool on_standyby();
+        void swap();
+
+        bool on_standby();
 
     private:
-        type::mutex_type m_helper_mutex;
-        bool m_on_standby;
+        bool m_on_standby{false};
     };
 }   // namespace lock
 
