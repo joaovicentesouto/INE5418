@@ -40,7 +40,7 @@ void LocksmithToken::ring_algorithm()
 
     while (true)
     {
-        type::udp::address_type predecessor;
+        type::udp::endpoint_type predecessor;
         type::error_type error;
 
         sock.receive_from(type::network::buffer(message), predecessor, 0, error);

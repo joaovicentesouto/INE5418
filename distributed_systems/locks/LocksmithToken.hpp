@@ -16,7 +16,7 @@ namespace locks
         using socket_type     = type::udp::socket_type;
         using resolver_type   = type::udp::resolver_type;
         using query_type      = type::udp::query_type;
-        using address_type    = type::udp::address_type;
+        using endpoint_type    = type::udp::endpoint_type;
 
         // Class constructors
         LocksmithToken();
