@@ -11,9 +11,9 @@ services:
     environment:
       - ID=0
       - CONTAINERS_AMOUNT=3
+      - SERVER_NAME=container0
       - MULTCAST_REQUEST=239.255.0.1
       - MULTCAST_CONFIRM=239.255.0.115
-      - SERVER_NAME=container0
       - HIBERNATION_TIME=1
       - SHARED_FILE=/shared_content/shared_object.dat
     volumes:
@@ -34,6 +34,8 @@ services:
       - ID=1
       - CONTAINERS_AMOUNT=3
       - SERVER_NAME=container0
+      - MULTCAST_REQUEST=239.255.0.1
+      - MULTCAST_CONFIRM=239.255.0.115
       - HIBERNATION_TIME=3
       - SHARED_FILE=/shared_content/shared_object.dat
     volumes:
@@ -54,6 +56,8 @@ services:
       - ID=2
       - CONTAINERS_AMOUNT=3
       - SERVER_NAME=container0
+      - MULTCAST_REQUEST=239.255.0.1
+      - MULTCAST_CONFIRM=239.255.0.115
       - HIBERNATION_TIME=5
       - SHARED_FILE=/shared_content/shared_object.dat
     volumes:
