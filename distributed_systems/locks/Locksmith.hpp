@@ -15,8 +15,8 @@ namespace locks
         // Class constructors
         virtual ~Locksmith() = default;
 
-        virtual void llock() = 0;
-        virtual void lunlock() = 0;
+        virtual void lock() = 0;
+        virtual void unlock() = 0;
     };
 }   // namespace lock
 

@@ -9,7 +9,6 @@
 
 namespace type
 {
-    // Namespace member types
     using string_type             = std::string;
     using thread_type             = std::thread;
     using mutex_type              = std::mutex;
@@ -18,6 +17,5 @@ namespace type
     namespace network             = boost::asio;
     namespace ip                  = network::ip;
     using error_type              = boost::system::error_code;
-}   // namespace types
 
 #endif  // BASIC_TYPES_HPP

@@ -27,8 +27,8 @@ namespace locks
         LocksmithCS(LocksmithCS&&) = default;
         LocksmithCS& operator=(LocksmithCS&&) = default;
 
-        void llock();
-        void lunlock();
+        void lock();
+        void unlock();
 
     private:
         void server_rises();

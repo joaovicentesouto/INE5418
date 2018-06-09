@@ -5,56 +5,65 @@ namespace locks
 
 LocksmithToken::LocksmithToken() :
     m_next_name(string_type("container") + std::to_string((std::stoi(std::getenv("ID"))+1) % std::stoi(std::getenv("CONTAINERS_AMOUNT")))),
-    m_hostname(string_type("container") + std::getenv("ID"))
+    m_hostname(string_type("container") + std::getenv("ID")),
+    m_containers_amount(std::stoi(std::getenv("CONTAINERS_AMOUNT")))
 {
     type::thread_type(&LocksmithToken::ring_algorithm, this).detach();
-    sleep(1);
 }
 
-void LocksmithToken::llock()
+void LocksmithToken::lock()
 {
-    m_mutex.lock();
+    m_standby_mutex.lock();
+
+    //! Wait for permission.
+    m_critical_mutex.lock();
 }
 
-void LocksmithToken::lunlock()
+void LocksmithToken::unlock()
 {
-    m_mutex.unlock();
+    //! Frees the ring thread.
+    m_critical_mutex.unlock();
+    m_standby_mutex.unlock();
 }
 
 void LocksmithToken::ring_algorithm()
 {
-    m_mutex.lock();
+    m_critical_mutex.lock();
+    
     char message[100];
-
+    type::error_type error;
     type::network::io_service udp_server;
-    type::udp::socket_type sock(udp_server, protocol_type::endpoint(type::ip::udp::v4(), 62000));
+    type::udp::socket_type socket(udp_server, protocol_type::endpoint(type::ip::udp::v4(), 62000));
 
-    if (m_hostname == "container2")
+    //! Last container starts sending token.
+    if (m_hostname == "container" + std::to_string(m_containers_amount-1))
     {
         resolver_type resolver(udp_server);
         auto destiny = *resolver.resolve(query_type(type::ip::udp::v4(), m_next_name, "62000"));
 
-        type::error_type ignored_error;
-        sock.send_to(type::network::buffer(message), destiny, 0, ignored_error);
+        socket.send_to(type::network::buffer(message), destiny, 0, error);
     }
+
+    type::udp::endpoint_type predecessor;
+    
+    resolver_type resolver(udp_server);
+    auto next_address = *resolver.resolve(query_type(type::ip::udp::v4(), m_next_name, "62000"));
 
     while (true)
     {
-        type::udp::endpoint_type predecessor;
-        type::error_type error;
+        //! Wait token.
+        socket.receive_from(type::network::buffer(message), predecessor, 0, error);
 
-        sock.receive_from(type::network::buffer(message), predecessor, 0, error);
+        //! Releases thread main.
+        m_critical_mutex.unlock();
+        m_standby_mutex.lock();
 
-        m_mutex.unlock();
-        m_mutex.lock();
+        m_critical_mutex.lock();
+        m_standby_mutex.unlock();
 
+        //! Sends token.
         strcpy(message, m_hostname.c_str());
-
-        resolver_type resolver(udp_server);
-        auto destiny = *resolver.resolve(query_type(type::ip::udp::v4(), m_next_name, "62000"));
-
-        type::error_type ignored_error;
-        sock.send_to(type::network::buffer(message), destiny, 0, ignored_error);
+        socket.send_to(type::network::buffer(message), next_address, 0, error);
     }
 }
 

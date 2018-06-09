@@ -27,16 +27,16 @@ namespace locks
         LocksmithToken(LocksmithToken&&) = default;
         LocksmithToken& operator=(LocksmithToken&&) = default;
 
-        void llock();
-        void lunlock();
+        void lock();
+        void unlock();
 
     private:
         void ring_algorithm();
 
         const string_type m_next_name;
         const string_type m_hostname;
-
-        type::mutex_type m_mutex;
+        const size_t      m_containers_amount;
+        type::mutex_type  m_critical_mutex, m_standby_mutex;
     };
 
 }   // namespace lock

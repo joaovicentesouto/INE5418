@@ -6,4 +6,3 @@
 # Add all subdirectories
 add_subdirectory(boost_tcp)
 add_subdirectory(boost_udp)
-#add_subdirectory(docker)

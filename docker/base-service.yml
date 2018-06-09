@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+
+  base:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      - CONTAINERS_AMOUNT=3
+      - SERVER_NAME=container0
+      - MULTCAST_REQUEST=239.255.0.1
+      - MULTCAST_CONFIRM=239.255.0.115
+      - SHARED_FILE=/shared_content/shared_object.dat
+    volumes:
+      - ./shared_content:/shared_content
+    expose:
+      - "62000"
+    command: "./INE5418/build/distributed_systems/distributed_systems_executable 2"
+    # 1: Client/Server | 2: Multicast/Lamport | 3: Token ring

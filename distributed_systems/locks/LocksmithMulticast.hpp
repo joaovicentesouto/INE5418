@@ -43,8 +43,8 @@ namespace locks
         LocksmithMulticast(LocksmithMulticast&&) = default;
         LocksmithMulticast& operator=(LocksmithMulticast&&) = default;
 
-        void llock();
-        void lunlock();
+        void lock();
+        void unlock();
 
     private:
         void lamport_algorithm();
