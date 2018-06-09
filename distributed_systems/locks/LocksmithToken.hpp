@@ -35,7 +35,6 @@ namespace locks
 
         const string_type m_next_name;
         const string_type m_hostname;
-        const size_t      m_containers_amount;
         type::mutex_type  m_critical_mutex, m_standby_mutex;
     };
 
