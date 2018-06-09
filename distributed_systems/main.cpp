@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     Field field;
 
     int count = 0;
-    while (count++ < 43200)
+    while (count++ < 1000)
     {
         locksmith->lock();
 
@@ -73,7 +73,10 @@ int main(int argc, char *argv[])
         in.close();
         in.clear();
 
-        std::cout << std::endl << std::endl << "Event: " << field.m_count << " | Predecessor: " << field.m_container_name << std::endl << std::flush;
+        std::cout << std::endl << std::endl
+                  << "Event: " << field.m_count
+                  << " | Predecessor: " << field.m_container_name
+                  << std::endl << std::flush;
 
         /* ----- WRITE MODE ----- */
 
@@ -84,23 +87,20 @@ int main(int argc, char *argv[])
 
         out.write(reinterpret_cast<char *>(&field), sizeof(Field));
 
-        std::cout << "Event: " << field.m_count << " | Current    : " << field.m_container_name << std::endl << std::endl << std::flush;
+        std::cout << "Event: " << field.m_count
+                  << " | Current    : " << field.m_container_name
+                  << std::endl << std::endl << std::flush;
 
         out.close();
         out.clear();
 
         locksmith->unlock();
 
-        for (auto i = 1; i <= std::stoi(hibernation_time); i++)
-        {
-            sleep(1);
+        for (auto i = 1; i <= std::stoi(hibernation_time); i++, sleep(1))
             std::cout << ". " << std::flush;
-        }
 
         std::cout << std::endl;
     }
-
-    std::cout << "Deu certo sem deadlock!";
 
     return 0;
 }
