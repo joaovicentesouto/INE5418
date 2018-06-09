@@ -17,5 +17,5 @@ services:
       - /Users/joaovicentesouto/code/INE5418:/code
     expose:
       - "62000"
-    # command: "./INE5418/build/distributed_systems/distributed_systems_executable 2"
+    command: "./INE5418/build/distributed_systems/distributed_systems_executable 2"
     # 1: Client/Server | 2: Multicast/Lamport | 3: Token ring
