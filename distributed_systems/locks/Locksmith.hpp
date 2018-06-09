@@ -6,6 +6,7 @@
 #include <utility>
 #include <functional>
 #include <distributed_systems/types/BasicTypes.hpp>
+#include <boost/date_time/posix_time/posix_time_types.hpp>
 
 namespace locks
 {

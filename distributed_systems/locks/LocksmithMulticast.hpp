@@ -1,6 +1,7 @@
 #ifndef LOCKS_LOCKSMITH_MULTICAST_HPP
 #define LOCKS_LOCKSMITH_MULTICAST_HPP
 
+#include <vector>
 #include "Locksmith.hpp"
 #include <distributed_systems/types/UDPTypes.hpp>
 
@@ -11,13 +12,13 @@ namespace locks
         using string_type = type::string_type;
 
         Key() = default;
-        Key(unsigned clock, string_type owner);
+        Key(size_t clock, string_type owner);
 
         bool operator<(const Key& another_key);
 
-        unsigned m_clock{0};
+        size_t m_clock{0};
         char   m_owner[100] = "No owner";
-        bool   m_type{false}; //! true: ok, false: request
+        bool   m_request{true}; //! false: ok, true: request
     };
 
     class LocksmithMulticast : public Locksmith
@@ -47,6 +48,7 @@ namespace locks
 
     private:
         void lamport_algorithm();
+        void check_deadline();
         void handle_receive_from(const type::error_type& error, size_t bytes_recvd);
 
         type::mutex_type    m_critical_mutex;
@@ -58,10 +60,9 @@ namespace locks
 
         type::network::io_service     m_udp_service;
         type::udp::socket_type        m_socket;
-        std::set<string_type> m_oks;
 
         Key m_key;
-        bool m_critical_region_request{false};
+        bool m_critical_region_request{false}, m_deadline{false};
     };
 
 }   // namespace lock
