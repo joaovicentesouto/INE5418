@@ -20,7 +20,11 @@ Implement the three mutual exclusion algorithms for distributed system studied i
 
 ## How execute
 
-[![asciicast](https://asciinema.org/a/184933.png)](https://asciinema.org/a/184933)
+Change the number in the command of the Docker/base-service. yml file to change between executions.
+
+[![client-server](https://asciinema.org/a/186422.png)](https://asciinema.org/a/186422)
+[![token-ring](https://asciinema.org/a/186424.png)](https://asciinema.org/a/186424)
+[![lamport](https://asciinema.org/a/186425.png)](https://asciinema.org/a/186425)
 
 # Credits
 
