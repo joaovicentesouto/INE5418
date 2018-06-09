@@ -82,8 +82,6 @@ void LocksmithMulticast::check_deadline()
         //! Sends multicast requesting request.
         m_key.m_request = true;
         m_socket.send_to(type::network::buffer(reinterpret_cast<char *>(&m_key), sizeof(m_key)), multicast_endpoint, 0, ignored_error);
-
-        m_socket.cancel();
     }
 }
 
