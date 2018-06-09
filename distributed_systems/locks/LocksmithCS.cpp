@@ -59,7 +59,7 @@ void LocksmithCS::server_rises()
             //! Recieves permission
             socket.read_some(type::network::buffer(requester), error);
 
-            std::cout << "- Server: Request by:        " << requester << std::endl << std::flush;
+            std::cout << "\n- Server: Request by:        " << requester << std::endl << std::flush;
             std::cout << "- Server: Allows access to:  " << requester << std::endl << std::flush;
 
             //! Sends permission
