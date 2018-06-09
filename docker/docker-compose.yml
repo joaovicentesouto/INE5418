@@ -11,7 +11,7 @@ services:
     environment:
       - ID=0
       - HIBERNATION_TIME=1
-    # tty: true                  # iterative
+    tty: true                  # iterative
 
   cont1:
     extends:
@@ -26,7 +26,7 @@ services:
       - HIBERNATION_TIME=3
     volumes:
       - ./shared_content:/shared_content
-    # tty: true                  # iterative
+    tty: true                  # iterative
 
   cont2:
     extends:
@@ -39,4 +39,4 @@ services:
     environment:
       - ID=2
       - HIBERNATION_TIME=5
-    # tty: true                  # iterative
+    tty: true                  # iterative
