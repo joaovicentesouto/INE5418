@@ -13,4 +13,4 @@ echo "* * * Run CMake"
 cmake ..
 
 echo "* * * Run make"
-make
+make -j

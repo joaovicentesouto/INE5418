@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     int count = 0;
     while (count++ < 43200)
     {
-        locksmith->llock();
+        locksmith->lock();
 
         /* ----- READ MODE ----- */
 
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
         out.close();
         out.clear();
 
-        locksmith->lunlock();
+        locksmith->unlock();
 
         for (auto i = 1; i <= std::stoi(hibernation_time); i++)
         {

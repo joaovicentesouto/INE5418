@@ -17,5 +17,6 @@ namespace type
     namespace network             = boost::asio;
     namespace ip                  = network::ip;
     using error_type              = boost::system::error_code;
+}
 
 #endif  // BASIC_TYPES_HPP

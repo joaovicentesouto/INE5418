@@ -2,7 +2,6 @@
 #define LOCKS_LOCKSMITH_MULTICAST_HPP
 
 #include "Locksmith.hpp"
-#include <distributed_systems/locks/LocksmithMutex.hpp>
 #include <distributed_systems/types/UDPTypes.hpp>
 
 namespace locks
