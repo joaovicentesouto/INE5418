@@ -20,10 +20,15 @@ Implement the three mutual exclusion algorithms for distributed system studied i
 
 ## How execute
 
-Change the number in the command of the Docker/base-service. yml file to change between executions.
+Change the number in the command of the Docker/base-service.yml file to change between executions.
 
+Client/Server
 [![client-server](https://asciinema.org/a/186422.png)](https://asciinema.org/a/186422)
+
+Token ring
 [![token-ring](https://asciinema.org/a/186424.png)](https://asciinema.org/a/186424)
+
+Multicast/Lamport
 [![lamport](https://asciinema.org/a/186425.png)](https://asciinema.org/a/186425)
 
 # Credits
