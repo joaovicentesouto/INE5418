@@ -11,12 +11,12 @@ namespace locks
         using string_type = type::string_type;
 
         Key() = default;
-        Key(unsigned age, string_type owner);
+        Key(unsigned clock, string_type owner);
 
         bool operator<(const Key& another_key);
 
         unsigned m_clock{0};
-        char   m_owner[100] = "owenerless";
+        char   m_owner[100] = "No owner";
         bool   m_type{false}; //! true: ok, false: request
     };
 

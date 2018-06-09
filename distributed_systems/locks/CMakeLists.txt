@@ -63,18 +63,3 @@ target_include_directories(distributed_systems_locks PUBLIC
     $<BUILD_INTERFACE:${distributed_systems_source_dir}>
     $<INSTALL_INTERFACE:include>
 )
-
-# Add library target
-#add_library(distributed_systems_locks_static STATIC ${distributed_systems_locks_source})
-
-# Tell cmake target's dependencies
-#target_link_libraries(distributed_systems_locks_static
-#)
-
-# Tell cmake the path to look for include files for this target
-# This is transitive, so any targets linked with this one will
-# search for headers in the respective paths
-#target_include_directories(distributed_systems_locks_static PUBLIC
-#    $<BUILD_INTERFACE:${distributed_systems_source_dir}>
-#    $<INSTALL_INTERFACE:include>
-#)

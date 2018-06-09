@@ -7,7 +7,6 @@
 # Each subdirectory target must be exported
 add_subdirectory(locks)
 add_subdirectory(types)
-# add_subdirectory(wrapper)
 
 # Add test target
 add_executable(distributed_systems_executable "main.cpp")

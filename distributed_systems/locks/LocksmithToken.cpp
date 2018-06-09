@@ -28,24 +28,27 @@ void LocksmithToken::ring_algorithm()
     char message[100];
 
     type::network::io_service udp_server;
-    type::udp::socket_type sock(udp_server, protocol_type::endpoint(type::ip::udp::v4(), 62000));
+    type::udp::socket_type socket(udp_server, protocol_type::endpoint(type::ip::udp::v4(), 62000));
 
-    if (m_hostname == "container2")
+    //! The last container starts sending the token.
+    if (m_next_name == "container0")
     {
         resolver_type resolver(udp_server);
         auto destiny = *resolver.resolve(query_type(type::ip::udp::v4(), m_next_name, "62000"));
 
         type::error_type ignored_error;
-        sock.send_to(type::network::buffer(message), destiny, 0, ignored_error);
+        socket.send_to(type::network::buffer(message), destiny, 0, ignored_error);
     }
+
+    type::udp::endpoint_type predecessor;
 
     while (true)
     {
-        type::udp::endpoint_type predecessor;
+        //! Wait token.
         type::error_type error;
+        socket.receive_from(type::network::buffer(message), predecessor, 0, error);
 
-        sock.receive_from(type::network::buffer(message), predecessor, 0, error);
-
+        //! Releases thread main.
         m_critical_mutex.unlock();
 
         m_standby_mutex.lock();
@@ -57,8 +60,9 @@ void LocksmithToken::ring_algorithm()
         resolver_type resolver(udp_server);
         auto destiny = *resolver.resolve(query_type(type::ip::udp::v4(), m_next_name, "62000"));
 
+        //! Send token.
         type::error_type ignored_error;
-        sock.send_to(type::network::buffer(message), destiny, 0, ignored_error);
+        socket.send_to(type::network::buffer(message), destiny, 0, ignored_error);
     }
 }
 

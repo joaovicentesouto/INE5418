@@ -3,7 +3,7 @@
 namespace locks
 {
 
-Key::Key(unsigned age, string_type owner) : m_clock(age)
+Key::Key(unsigned clock, string_type owner) : m_clock(clock)
 {
     strcpy(m_owner, owner.c_str());
 }
@@ -122,7 +122,7 @@ void LocksmithMulticast::lamport_algorithm()
 
             //! Updates clock and sends Ok to anyone waiting.
             major_clock = major_clock + m_containers_amount;
-            m_key.m_clock = major_clock + (m_containers_amount - (major_clock % m_containers_amount));
+            m_key.m_clock = major_clock + (m_containers_amount - (major_clock % m_containers_amount)) + m_id;
             m_key.m_type = true;
 
             m_socket.send_to(type::network::buffer(reinterpret_cast<char *>(&m_key), sizeof(m_key)), multicast_endpoint, 0, error);
