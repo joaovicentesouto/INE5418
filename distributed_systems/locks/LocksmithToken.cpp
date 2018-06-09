@@ -41,7 +41,10 @@ void LocksmithToken::ring_algorithm()
         resolver_type resolver(udp_server);
         auto destiny = *resolver.resolve(query_type(type::ip::udp::v4(), m_next_name, "62000"));
 
+        std::cout << "xxxxxx " << m_hostname << std::endl << std::flush;
         socket.send_to(type::network::buffer(message), destiny, 0, error);
+
+        error.clear();
     }
 
     type::udp::endpoint_type predecessor;
@@ -52,6 +55,7 @@ void LocksmithToken::ring_algorithm()
     while (true)
     {
         //! Wait token.
+        std::cout << "yyyyyy " << m_hostname << std::endl << std::flush;
         socket.receive_from(type::network::buffer(message), predecessor, 0, error);
 
         //! Releases thread main.
@@ -63,6 +67,9 @@ void LocksmithToken::ring_algorithm()
 
         //! Sends token.
         strcpy(message, m_hostname.c_str());
+        std::cout << "zzzzzz " << m_hostname << std::endl << std::flush;
+        
+        error.clear();
         socket.send_to(type::network::buffer(message), next_address, 0, error);
     }
 }
