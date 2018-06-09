@@ -70,7 +70,7 @@ void LocksmithMulticast::unlock()
     m_critical_mutex.unlock();
 }
 
-void LocksmithMulticast::check_deadline()
+void LocksmithMulticast::check_deadlock()
 {
     sleep(0.5);
 
@@ -140,7 +140,7 @@ void LocksmithMulticast::lamport_algorithm()
                 if (confirmed_me.size() < m_containers_amount - 1)
                 {
                     m_deadline = true;
-                    type::thread_type(&LocksmithMulticast::check_deadline, this).detach();
+                    type::thread_type(&LocksmithMulticast::check_deadlock, this).detach();
 
                     m_socket.receive_from(type::network::buffer(reinterpret_cast<char *>(&question_key), sizeof(Key)), requester, 0, error);
                     m_deadline = false;

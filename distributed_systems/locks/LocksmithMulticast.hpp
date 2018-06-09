@@ -48,7 +48,7 @@ namespace locks
 
     private:
         void lamport_algorithm();
-        void check_deadline();
+        void check_deadlock();
         void handle_receive_from(const type::error_type& error, size_t bytes_recvd);
 
         type::mutex_type    m_critical_mutex;
