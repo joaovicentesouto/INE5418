@@ -9,6 +9,8 @@ LocksmithToken::LocksmithToken() :
     m_hostname(string_type("container") + std::getenv("ID"))
 {
     type::thread_type(&LocksmithToken::ring_algorithm, this).detach();
+    
+    sleep(1);
 }
 
 void LocksmithToken::lock()
