@@ -7,6 +7,8 @@ LocksmithToken::LocksmithToken() :
     m_next_name(string_type("container") + std::to_string((std::stoi(std::getenv("ID"))+1) % std::stoi(std::getenv("CONTAINERS_AMOUNT")))),
     m_hostname(string_type("container") + std::getenv("ID"))
 {
+    std::cout << "Initiating token ring algorithm." << std::flush;
+
     type::thread_type(&LocksmithToken::ring_algorithm, this).detach();
 }
 

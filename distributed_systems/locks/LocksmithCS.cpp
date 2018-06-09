@@ -9,6 +9,8 @@ LocksmithCS::LocksmithCS() :
     m_client_service(),
     m_client(m_client_service)
 {
+    std::cout << "Initiating client/server algorithm." << std::flush;
+
     if (m_hostname == m_server_name)
         std::thread(&LocksmithCS::server_rises, this).detach();
 }
@@ -57,8 +59,8 @@ void LocksmithCS::server_rises()
             //! Recieves permission
             socket.read_some(type::network::buffer(requester), error);
 
-            std::cout << " ___ Requisição de:         " << requester << std::endl << std::flush;
-            std::cout << " ___ Envia permissão para:  " << requester << std::endl << std::flush;
+            std::cout << "- Server: Requisição de:         " << requester << std::endl << std::flush;
+            std::cout << "- Server: Envia permissão para:  " << requester << std::endl << std::flush;
 
             //! Sends permission
             type::network::write(socket, type::network::buffer(requester, 100));
@@ -66,7 +68,7 @@ void LocksmithCS::server_rises()
             //! Waits confirmation
             socket.read_some(type::network::buffer(requester), error);
 
-            std::cout << " ___ Recebe confirmação de: " << requester << std::endl << std::flush;
+            std::cout << "- Server: Recebe confirmação de: " << requester << std::endl << std::flush;
         }
         catch (std::exception& e)
         {
