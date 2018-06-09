@@ -18,9 +18,9 @@ int main(int argc, char *argv[])
     if (argc == 1)
     {
         std::cout << "Please inform the desired synchronization algorithm:\n"
-                  << "1: Client/server\n"
-                  << "2: Lamport/Multicast\n"
-                  << "3: Queue\n" << std::flush;
+                  << "1: Client/Server\n"
+                  << "2: Token ring\n"
+                  << "3: Multicast/Lamport\n" << std::flush;
         return 1;
     }
 
@@ -32,10 +32,10 @@ int main(int argc, char *argv[])
         locksmith = new locks::LocksmithCS();
         break;
     case 2:
-        locksmith = new locks::LocksmithMulticast();
+        locksmith = new locks::LocksmithToken();
         break;
     case 3:
-        locksmith = new locks::LocksmithToken();
+        locksmith = new locks::LocksmithMulticast();
         break;
     default:
         std::cout << "Invalid option.\n" << std::flush;
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     Field field;
 
     int count = 0;
-    while (count++ < 1000)
+    while (count++ < 100)
     {
         locksmith->lock();
 

@@ -110,6 +110,7 @@ void LocksmithMulticast::lamport_algorithm()
 
         if (m_critical_region_request)
         {
+            //! Until you receive all confirmations.
             while (confirmed_me.size() < m_containers_amount - 1)
             {
                 //! Ignore my own messages.

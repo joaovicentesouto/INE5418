@@ -59,8 +59,8 @@ void LocksmithCS::server_rises()
             //! Recieves permission
             socket.read_some(type::network::buffer(requester), error);
 
-            std::cout << "- Server: Requisição de:         " << requester << std::endl << std::flush;
-            std::cout << "- Server: Envia permissão para:  " << requester << std::endl << std::flush;
+            std::cout << "- Server: Request by:        " << requester << std::endl << std::flush;
+            std::cout << "- Server: Allows access to:  " << requester << std::endl << std::flush;
 
             //! Sends permission
             type::network::write(socket, type::network::buffer(requester, 100));
@@ -68,7 +68,7 @@ void LocksmithCS::server_rises()
             //! Waits confirmation
             socket.read_some(type::network::buffer(requester), error);
 
-            std::cout << "- Server: Recebe confirmação de: " << requester << std::endl << std::flush;
+            std::cout << "- Server: Exit confirmation: " << requester << std::endl << std::flush;
         }
         catch (std::exception& e)
         {
